@@ -1,0 +1,19 @@
+pluginManagement {
+    repositories {
+        maven { url 'https://mirrors.tencent.com/nexus/repository/maven-public/' }
+        maven { url 'https://mirrors.tencent.com/nexus/repository/gradle-plugins/' }
+        google()
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.PREFER_SETTINGS)
+    repositories {
+        maven { url 'https://mirrors.tencent.com/nexus/repository/maven-public/' }
+        google()
+        mavenCentral()
+    }
+}
+rootProject.name = "SubPlayer"
+include ':app'
