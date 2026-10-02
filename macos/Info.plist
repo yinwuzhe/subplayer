@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>CFBundleDevelopmentRegion</key><string>zh_CN</string>
+    <key>CFBundleExecutable</key><string>SubPlayerMac</string>
+    <key>CFBundleIdentifier</key><string>com.subplayer.mac</string>
+    <key>CFBundleName</key><string>SubPlayer</string>
+    <key>CFBundleDisplayName</key><string>SubPlayer</string>
+    <key>CFBundlePackageType</key><string>APPL</string>
+    <key>CFBundleShortVersionString</key><string>1.1.1</string>
+    <key>CFBundleVersion</key><string>3</string>
+    <key>CFBundleIconFile</key><string>SubPlayer.icns</string>
+    <key>LSMinimumSystemVersion</key><string>12.0</string>
+    <key>LSApplicationCategoryType</key><string>public.app-category.video</string>
+    <key>NSHighResolutionCapable</key><true/>
+    <key>NSLocalNetworkUsageDescription</key><string>发现同一 Wi-Fi 下的电视，并将 Mac 上的视频投屏到电视。</string>
+    <key>NSAppTransportSecurity</key>
+    <dict><key>NSAllowsArbitraryLoads</key><true/></dict>
+</dict>
+</plist>

@@ -48,12 +48,26 @@
             android:textSize="13sp" />
     </LinearLayout>
 
-    <!-- 底部悬浮控制栏 -->
-    <LinearLayout
-        android:id="@+id/top_bar"
+    <TextView
+        android:id="@+id/cast_status"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|center_horizontal"
+        android:layout_marginBottom="120dp"
+        android:background="@drawable/bg_control_bar"
+        android:paddingHorizontal="18dp"
+        android:paddingVertical="9dp"
+        android:textColor="#FFFFFFFF"
+        android:textSize="13sp"
+        android:visibility="gone" />
+
+    <!-- 底部悬浮控制栏 -->
+    <LinearLayout
+        android:id="@+id/top_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center_horizontal"
+        android:layout_marginHorizontal="12dp"
         android:layout_marginBottom="28dp"
         android:background="@drawable/bg_control_bar"
         android:gravity="center_vertical"
@@ -63,15 +77,16 @@
 
         <LinearLayout
             android:id="@+id/btn_open"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:background="@drawable/bg_control_item"
             android:clickable="true"
             android:focusable="true"
             android:gravity="center"
             android:orientation="vertical"
-            android:minWidth="56dp"
-            android:paddingHorizontal="14dp"
+            android:minWidth="48dp"
+            android:paddingHorizontal="4dp"
             android:paddingVertical="10dp">
 
             <TextView
@@ -90,16 +105,47 @@
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/btn_subtitle"
-            android:layout_width="wrap_content"
+            android:id="@+id/btn_cast"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:background="@drawable/bg_control_item"
             android:clickable="true"
             android:focusable="true"
             android:gravity="center"
             android:orientation="vertical"
-            android:minWidth="56dp"
-            android:paddingHorizontal="14dp"
+            android:minWidth="48dp"
+            android:paddingHorizontal="4dp"
+            android:paddingVertical="10dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="▣"
+                android:textColor="#FFFFFFFF"
+                android:textSize="22sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="3dp"
+                android:text="投屏"
+                android:textColor="#FFFFFFFF"
+                android:textSize="11sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/btn_subtitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/bg_control_item"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:minWidth="48dp"
+            android:paddingHorizontal="4dp"
             android:paddingVertical="10dp">
 
             <TextView
@@ -119,15 +165,16 @@
 
         <LinearLayout
             android:id="@+id/btn_speed"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:background="@drawable/bg_control_item"
             android:clickable="true"
             android:focusable="true"
             android:gravity="center"
             android:orientation="vertical"
-            android:minWidth="56dp"
-            android:paddingHorizontal="14dp"
+            android:minWidth="48dp"
+            android:paddingHorizontal="4dp"
             android:paddingVertical="10dp">
 
             <TextView
@@ -147,15 +194,16 @@
 
         <LinearLayout
             android:id="@+id/btn_fullscreen"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:background="@drawable/bg_control_item"
             android:clickable="true"
             android:focusable="true"
             android:gravity="center"
             android:orientation="vertical"
-            android:minWidth="56dp"
-            android:paddingHorizontal="14dp"
+            android:minWidth="48dp"
+            android:paddingHorizontal="4dp"
             android:paddingVertical="10dp">
 
             <TextView

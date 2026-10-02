@@ -1,0 +1,28 @@
+SubPlayer Mac 1.1 — Third-party playback components
+
+This application embeds unmodified libVLC/libvlccore and playback modules from
+VideoLAN VLC 3.0.24 (macOS arm64). It does not require VLC to be installed.
+The original library signatures are replaced with local ad-hoc signatures for
+bundling. The VLC macOS application-interface plugin is not included.
+
+VLC and its components are copyright their respective VideoLAN contributors.
+libVLC and libvlccore are licensed under LGPL 2.1 or later. Individual modules
+and bundled dependencies retain their own licenses, including GPL and LGPL.
+The accompanying COPYING, COPYING.LIB and AUTHORS files are from VLC 3.0.24.
+
+Official binary:
+https://download.videolan.org/pub/videolan/vlc/3.0.24/macosx/vlc-3.0.24-arm64.dmg
+SHA-256: 64a89d93cdd30b0e97131743e246373db82d6826ea882d265d46d74b136da2b7
+
+Corresponding upstream source and dependency build recipes:
+https://download.videolan.org/pub/videolan/vlc/3.0.24/vlc-3.0.24.tar.xz
+https://code.videolan.org/videolan/vlc/-/tree/3.0.24/contrib
+https://www.videolan.org/developers/vlc.html
+
+The libraries and modules remain dynamically linked in Contents/Frameworks/VLC.
+They can be replaced with ABI-compatible builds; the local application signature
+must then be renewed. No DRM or library-validation restriction is added.
+
+This local build is not Apple-notarized. Before public redistribution, review
+and comply with the license and corresponding-source obligations of every
+included module and dependency.
