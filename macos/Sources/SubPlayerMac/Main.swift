@@ -1,5 +1,6 @@
 import AppKit
 import PlaybackCore
+import UniformTypeIdentifiers
 
 @MainActor
 final class AppController: NSObject, NSApplicationDelegate, NSWindowDelegate {
@@ -23,6 +24,7 @@ final class AppController: NSObject, NSApplicationDelegate, NSWindowDelegate {
     private let emptyLabel = NSTextField(labelWithString: "打开 Mac 上的视频，直接播放或投到电视")
     private let statusLabel = NSTextField(labelWithString: "视频保存在 Mac 上即可，无需下载到手机")
     private let subtitlePicker = NSPopUpButton()
+    private let loadSubtitleButton = NSButton()
     private let speedPicker = NSPopUpButton()
     private let castButton = NSButton()
     private let remoteRow = NSStackView()
@@ -173,6 +175,12 @@ final class AppController: NSObject, NSApplicationDelegate, NSWindowDelegate {
         subtitlePicker.isEnabled = false
         subtitlePicker.target = self
         subtitlePicker.action = #selector(changeSubtitle)
+        subtitlePicker.widthAnchor.constraint(lessThanOrEqualToConstant: 210).isActive = true
+        loadSubtitleButton.title = "加载字幕…"
+        loadSubtitleButton.bezelStyle = .rounded
+        loadSubtitleButton.target = self
+        loadSubtitleButton.action = #selector(loadExternalSubtitle)
+        loadSubtitleButton.toolTip = "加载 SRT / ASS / SSA / VTT，仅用于本机播放"
         speedPicker.addItems(withTitles: ["0.5×", "0.75×", "1×", "1.25×", "1.5×", "2×", "3×"])
         speedPicker.selectItem(at: 2)
         speedPicker.target = self
@@ -184,7 +192,7 @@ final class AppController: NSObject, NSApplicationDelegate, NSWindowDelegate {
         castButton.target = self
         castButton.action = #selector(showTelevisions)
         let fullscreenButton = makeButton("全屏", icon: "arrow.up.left.and.arrow.down.right", action: #selector(toggleFullscreen))
-        let controls = NSStackView(views: [openButton, subtitlePicker, speedPicker, NSView(), castButton, fullscreenButton])
+        let controls = NSStackView(views: [openButton, loadSubtitleButton, subtitlePicker, speedPicker, NSView(), castButton, fullscreenButton])
         controls.orientation = .horizontal
         controls.alignment = .centerY
         controls.spacing = 12
@@ -362,6 +370,36 @@ final class AppController: NSObject, NSApplicationDelegate, NSWindowDelegate {
         localCommand { try await self.player.setVolume(target) }
     }
 
+    @objc private func loadExternalSubtitle() {
+        guard !busy, !quitting, !cast.isCasting, player.hasMedia else { return }
+        let video = videoURL
+        let panel = NSOpenPanel()
+        panel.title = "加载外部字幕"
+        panel.message = "支持 SRT、ASS、SSA、VTT；外挂字幕仅在本机显示。"
+        panel.allowedContentTypes = ExternalSubtitle.extensions.compactMap { UTType(filenameExtension: $0) }
+        panel.canChooseDirectories = false
+        panel.allowsMultipleSelection = false
+        panel.directoryURL = videoURL?.deletingLastPathComponent()
+        panel.beginSheetModal(for: window) { [weak self] response in
+            guard let self = self, response == .OK, let url = panel.url,
+                  self.videoURL == video, !self.busy, !self.quitting, !self.cast.isCasting else { return }
+            self.busy = true
+            self.refreshCastControls()
+            self.statusLabel.stringValue = "正在加载字幕：\(url.lastPathComponent)…"
+            Task { @MainActor in
+                do {
+                    try await self.player.loadSubtitle(url)
+                    self.statusLabel.stringValue = "已加载字幕：\(url.lastPathComponent)"
+                } catch {
+                    self.statusLabel.stringValue = "字幕加载失败：\(error.localizedDescription)"
+                }
+                self.busy = false
+                await self.pollPlayback()
+                self.refreshCastControls()
+            }
+        }
+    }
+
     @objc private func changeSubtitle() {
         guard subtitleOptions.indices.contains(subtitlePicker.indexOfSelectedItem) else { return }
         let track = subtitleOptions[subtitlePicker.indexOfSelectedItem]
@@ -446,6 +484,7 @@ final class AppController: NSObject, NSApplicationDelegate, NSWindowDelegate {
         openButton.isEnabled = !busy && !quitting
         castButton.isEnabled = videoURL != nil && !busy && !quitting
         subtitlePicker.isEnabled = subtitleOptions.count > 1 && localEnabled
+        loadSubtitleButton.isEnabled = localEnabled && (snapshot?.state == .playing || snapshot?.state == .paused)
         speedPicker.isEnabled = localEnabled
         playButton.isEnabled = localEnabled
         progress.isEnabled = localEnabled && snapshot?.seekable == true

@@ -20,6 +20,8 @@ let package = Package(
         .executableTarget(name: "SubPlayerMac", dependencies: ["PlaybackCore"],
                           swiftSettings: imports, linkerSettings: links),
         .executableTarget(name: "PlaybackCheck", dependencies: ["PlaybackCore"],
-                          path: "Tests/PlaybackCheck", swiftSettings: imports, linkerSettings: links)
+                          path: "Tests/PlaybackCheck", swiftSettings: imports, linkerSettings: links),
+        .executableTarget(name: "SubtitleCheck", dependencies: ["PlaybackCore"],
+                          path: "Tests/SubtitleCheck", swiftSettings: imports, linkerSettings: links)
     ]
 )

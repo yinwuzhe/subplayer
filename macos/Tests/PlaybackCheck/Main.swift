@@ -53,9 +53,31 @@ final class PlaybackCheck: NSObject, NSApplicationDelegate {
                     print("PASS: subtitle \(track.id) \(track.name)")
                 }
                 try await player.selectSubtitle(-1)
+                for path in CommandLine.arguments.dropFirst(2) {
+                    let subtitle = URL(fileURLWithPath: path)
+                    try await player.pause()
+                    let before = try await waitFor(player) { $0.state == .paused }
+                    try await player.loadSubtitle(subtitle)
+                    let after = try await player.snapshot()
+                    guard after.subtitles.count == before.subtitles.count + 1,
+                          after.selectedSubtitle >= 0, after.state == .paused,
+                          abs(after.seconds - before.seconds) < 0.5, abs(after.speed - 1.5) < 0.01 else {
+                        throw PlaybackError.unavailable("Import changed playback state or did not add subtitle")
+                    }
+                    try await player.loadSubtitle(subtitle)
+                    let repeated = try await player.snapshot()
+                    guard repeated.subtitles.count == after.subtitles.count else {
+                        throw PlaybackError.unavailable("Repeated import duplicated subtitle")
+                    }
+                    try await player.selectSubtitle(-1)
+                    _ = try await waitFor(player) { $0.selectedSubtitle == -1 }
+                    try await player.play()
+                    print("PASS: external import/disable/deduplicate/preserve state: \(subtitle.lastPathComponent)")
+                }
                 try await player.open(url)
                 _ = try await waitFor(player) {
                     $0.state == .playing && $0.displayedPictures > 5 && $0.speed == 1
+                        && $0.subtitles.count == initial.subtitles.count
                 }
                 print("PASS: reopen resets playback and keeps renderer functional")
                 do {

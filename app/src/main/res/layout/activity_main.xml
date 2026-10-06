@@ -61,18 +61,33 @@
         android:textSize="13sp"
         android:visibility="gone" />
 
+    <TextView
+        android:id="@+id/audio_status"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="88dp"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/bg_control_bar"
+        android:padding="12dp"
+        android:textColor="#FFFFD180"
+        android:textSize="13sp"
+        android:accessibilityLiveRegion="polite"
+        android:visibility="gone" />
+
     <!-- 底部悬浮控制栏 -->
     <LinearLayout
         android:id="@+id/top_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|center_horizontal"
-        android:layout_marginHorizontal="12dp"
+        android:layout_marginHorizontal="8dp"
         android:layout_marginBottom="28dp"
         android:background="@drawable/bg_control_bar"
         android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:paddingHorizontal="10dp"
+        android:paddingHorizontal="4dp"
         android:paddingVertical="6dp">
 
         <LinearLayout
@@ -159,6 +174,37 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="3dp"
                 android:text="字幕"
+                android:textColor="#FFFFFFFF"
+                android:textSize="11sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/btn_audio"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/bg_control_item"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:minWidth="48dp"
+            android:paddingHorizontal="4dp"
+            android:paddingVertical="10dp"
+            android:contentDescription="选择本机音轨">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="♪"
+                android:textColor="#FFFFFFFF"
+                android:textSize="22sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="3dp"
+                android:text="音轨"
                 android:textColor="#FFFFFFFF"
                 android:textSize="11sp" />
         </LinearLayout>

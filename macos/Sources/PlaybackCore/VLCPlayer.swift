@@ -36,6 +36,14 @@ private final class VLCSession: @unchecked Sendable {
     let player: OpaquePointer
     var closed = false
     var desiredSpeed: Float = 1
+    var subtitleDirectories: [URL] = []
+    var externalSubtitles: [String: Int32] = [:]
+
+    func clearExternalSubtitles() {
+        for directory in subtitleDirectories { try? FileManager.default.removeItem(at: directory) }
+        subtitleDirectories.removeAll()
+        externalSubtitles.removeAll()
+    }
 
     init(drawable: NSView, runtime: URL) throws {
         setenv("VLC_PLUGIN_PATH", runtime.appendingPathComponent("plugins").path, 1)
@@ -83,6 +91,7 @@ public final class VLCPlayer {
         }
         try await perform { session in
             libvlc_media_player_stop(session.player)
+            session.clearExternalSubtitles()
             guard let media = libvlc_media_new_path(session.instance, url.path) else {
                 throw PlaybackError.unavailable("无法读取视频文件")
             }
@@ -135,8 +144,53 @@ public final class VLCPlayer {
         }
     }
 
+    public func loadSubtitle(_ url: URL) async throws {
+        guard hasMedia else { throw PlaybackError.unavailable("请先打开视频") }
+        let key = url.standardizedFileURL.resolvingSymlinksInPath().path
+        let before = try await snapshot()
+        guard before.state == .playing || before.state == .paused else {
+            throw PlaybackError.unavailable("请等待视频加载完成，或继续播放后再加载字幕")
+        }
+        let existing: Int32? = try await perform { $0.externalSubtitles[key] }
+        if let existing = existing, before.subtitles.contains(where: { $0.id == existing }) {
+            try await selectSubtitle(existing)
+            return
+        }
+        let scoped = url.startAccessingSecurityScopedResource()
+        defer { if scoped { url.stopAccessingSecurityScopedResource() } }
+        try await perform { session in
+            let data = try ExternalSubtitle.read(url)
+            let directory = FileManager.default.temporaryDirectory.appendingPathComponent("SubPlayer-subtitle-\(UUID().uuidString)")
+            try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+            let copy = directory.appendingPathComponent(url.lastPathComponent)
+            do {
+                try data.write(to: copy, options: .atomic)
+                guard libvlc_media_player_add_slave(session.player, libvlc_media_slave_type_subtitle,
+                                                   copy.absoluteString, true) == 0 else {
+                    throw PlaybackError.unavailable("VLC 无法加载该字幕文件")
+                }
+                session.subtitleDirectories.append(directory)
+            } catch {
+                try? FileManager.default.removeItem(at: directory)
+                throw error
+            }
+        }
+        let oldIDs = Set(before.subtitles.map(\.id))
+        for _ in 0..<50 {
+            let current = try await snapshot()
+            if let added = current.subtitles.first(where: { !oldIDs.contains($0.id) }) {
+                try await selectSubtitle(added.id)
+                try await perform { $0.externalSubtitles[key] = added.id }
+                return
+            }
+            try await Task.sleep(nanoseconds: 100_000_000)
+        }
+        throw PlaybackError.unavailable("字幕轨道尚未就绪，请继续播放后查看字幕菜单，或检查字幕内容")
+    }
+
     public func selectSubtitle(_ id: Int32) async throws {
         try await perform { session in
+            if id == -1 && libvlc_video_get_spu(session.player) == -1 { return }
             guard libvlc_video_set_spu(session.player, id) == 0 else {
                 throw PlaybackError.unavailable("无法切换字幕轨道")
             }
@@ -199,6 +253,7 @@ public final class VLCPlayer {
                 libvlc_media_player_set_nsobject(session.player, nil)
                 libvlc_media_player_release(session.player)
                 libvlc_release(session.instance)
+                session.clearExternalSubtitles()
                 session.closed = true
                 continuation.resume()
             }

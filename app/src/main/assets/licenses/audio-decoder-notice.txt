@@ -1,0 +1,17 @@
+SubPlayer Android 1.2 — 音频软件解码
+
+包含 org.jellyfin.media3:media3-ffmpeg-decoder:1.6.1+2，与 AndroidX Media3 1.6.1 配套使用。
+该扩展由 Jellyfin 项目预编译，经 Maven Central 获取；不是 Google 发布的官方预编译 FFmpeg 库。
+启用的音频解码器：AAC、MP3、AC3、E-AC3、DTS (dca)、TrueHD、MLP、FLAC、ALAC、PCM μ-law/A-law。
+视频仍由 Media3 的系统视频解码器播放。音频解码为 PCM 后通过 Android AudioTrack 输出。
+
+上游版权：Android Open Source Project、Jellyfin 贡献者、FFmpeg 贡献者及各组件版权持有人。
+AndroidX Media3 Java 扩展源代码采用 Apache License 2.0；Jellyfin 该预编译发行包的 Maven POM 声明 GPL-3.0。
+各组件的原有许可继续适用。完整 GPL 许可随 APK 保存在 assets/licenses/FFmpeg-decoder-COPYING.txt。
+
+对应版本的源码及可复现构建配置：
+https://github.com/jellyfin/jellyfin-androidx-media/tree/v1.6.1%2B2
+该标签中的 media 与 ffmpeg 子模块固定了所用源码提交；build.sh 固定启用的解码器。
+https://repo.maven.apache.org/maven2/org/jellyfin/media3/media3-ffmpeg-decoder/1.6.1%2B2/
+
+本次提供本地测试安装包，不改变项目其他代码的许可声明。对外发布含此组件的二进制前，须满足 GPL 的对应源码提供及兼容授权等义务。
